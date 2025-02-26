@@ -1,0 +1,80 @@
+name: Autograding Tests
+'on':
+- push
+- repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Test Case 1 [yes]
+      id: test-case-1-yes
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: Test Case 1 [yes]
+        setup-command: ''
+        command: python3 compliment_02.py
+        input: 'yes'
+        expected-output: |-
+          Would you like a compliment? You have wonderful eyes.
+          Thank you for playing.
+        comparison-method: exact
+        timeout: 10
+        max-score: 5
+    - name: Test Case 2 [Yes]
+      id: test-case-2-yes
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: Test Case 2 [Yes]
+        setup-command: ''
+        command: python3 compliment_02.py
+        input: 'Yes'
+        expected-output: |-
+          Would you like a compliment? No compliment for you!
+          Thank you for playing.
+        comparison-method: exact
+        timeout: 10
+        max-score: 5
+    - name: Test Case 3 [y]
+      id: test-case-3-y
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: Test Case 3 [y]
+        setup-command: ''
+        command: python3 compliment_02.py
+        input: "y"
+        expected-output: |-
+          Would you like a compliment? No compliment for you!
+          Thank you for playing.
+        comparison-method: exact
+        timeout: 10
+        max-score: 5
+    - name: Test Case 4 [no]
+      id: test-case-4-no
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: Test Case 4 [no]
+        setup-command: ''
+        command: python3 compliment_02.py
+        input: 'no'
+        expected-output: |-
+          Would you like a compliment? No compliment for you!
+          Thank you for playing.
+        comparison-method: exact
+        timeout: 10
+        max-score: 5
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        TEST-CASE-1-YES_RESULTS: "${{steps.test-case-1-yes.outputs.result}}"
+        TEST-CASE-2-YES_RESULTS: "${{steps.test-case-2-yes.outputs.result}}"
+        TEST-CASE-3-Y_RESULTS: "${{steps.test-case-3-y.outputs.result}}"
+        TEST-CASE-4-NO_RESULTS: "${{steps.test-case-4-no.outputs.result}}"
+      with:
+        runners: test-case-1-yes,test-case-2-yes,test-case-3-y,test-case-4-no
